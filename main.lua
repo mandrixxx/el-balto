@@ -19,6 +19,12 @@ SMODS.Atlas{
     py = 95 
 }
 SMODS.Atlas{
+    key = 'dicks',
+    path = 'dicks.png',
+    px = 71,
+    py = 95 
+}
+SMODS.Atlas{
     key = 'vouchers',
     path = 'atlasvoucher.png',
     px = 59,
@@ -33,6 +39,43 @@ SMODS.Atlas{
 SMODS.current_mod.optional_features = {
     -- enable additional SMODS contexts that can be CPU intensive
     retrigger_joker = true,
+}
+SMODS.Back{
+    name = "Offensive Deck",
+    key = "offensive-deck",
+	atlas = "dicks",
+	unlocked = true,
+    pos = {x = 0, y = 0},
+    config = {glass = true},
+    loc_txt = {
+        ['es_ES'] = {
+            name = 'Baraja Ofensiva',
+            text = {
+                'Empieza con una baraja de {C:attention}Cartas de Vidrio{},',
+				'{C:red}Minero{} y {C:green}Frágil{} {C:purple}eternos{}'
+            }
+        },
+        ['default'] = {
+            name = 'Offensive Deck',
+            text = {
+                'Start with a {C:attention}Glass Card{} deck',
+				'{C:purple}eternal{} {C:red}Miner{},',
+				'and {C:purple}eternal{} {C:green}Fragile{}'
+            }
+        }
+    },
+    apply = function()
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                for i = #G.playing_cards, 1, -1 do
+                    G.playing_cards[i]:set_ability(G.P_CENTERS.m_glass)
+                end
+				SMODS.add_card({set = 'Joker', area = G.jokers, key = 'j_idk_miner', stickers = { 'eternal' } })
+				SMODS.add_card({set = 'Joker', area = G.jokers, key = 'j_idk_glaaass', stickers = { 'eternal' } })
+                return true
+            end
+        }))
+    end
 }
 
 SMODS.PokerHand {
@@ -282,13 +325,13 @@ SMODS.Joker {
 	['en-us'] = {
 		name = 'Heart Attack 2',
 		text = {
-		"god is dead." 
+		"why." 
 		}
 	},
 	['es_ES'] = {
 		name = 'Fallo cardiaco 2',
 		text = {
-		"dios ha muerto."
+		"porque."
 		}
 	}
   },
@@ -806,7 +849,7 @@ SMODS.Joker {
 		name = '8.5 Ball',
 		text = {
 		"Each scored {C:attention}8{} has a {C:green}#1# in #2#{}",
-		"of creating {C;attention}8{} {C:negative}negative{} {C:attention}Tarot Cards{}",
+		"of creating {C;attention}8{} {C:dark_editione}negative{} {C:attention}Tarot Cards{}",
 		"{C:inactive}Decimal number, peak comedy.{}"
 		}
 	},
@@ -814,7 +857,7 @@ SMODS.Joker {
 		name = 'Bola 8.5',
 		text = {
 		"Cada {C:attention}8{} puntuado tiene {C:green}#1# en #2#{}",
-		"de crear {C;attention}8{} {C:attention}Cartas del Tarot{} {C:negative}negativas{}",
+		"de crear {C;attention}8{} {C:attention}Cartas del Tarot{} {C:dark_edition}negativas{}",
 		"{C:inactive}Número decimal, el pináculo de la comedia.{}"
 		}
 	}
@@ -942,6 +985,38 @@ SMODS.Joker {
 		}
     end
   end
+}
+SMODS.Joker {
+    key = '8dollars',
+    loc_txt = {
+	['en-us'] = {
+		name = '$8',
+		text = {
+		"{C:money}+$#1#{} at the end of round"
+		}
+	},
+	['es_ES'] = {
+		name = '$8',
+		text = {
+			"{C:money}+$#1#{} al final de cada ronda"
+		}
+	}
+    },
+    config = { extra = { money = 8 } },
+    loc_vars = function(self, info_queue, card)
+      return { vars = { card.ability.extra.money } }
+    end,
+    rarity = 2,
+    atlas = 'jokers',
+    pos = { x = 0, y = 4 },
+    cost = 8,
+    blueprint_compat = true,
+	eternal_compat = true, --can it be eternal
+	perishable_compat = true, --can it be perishable
+	calc_dollar_bonus = function(self, card)
+		local bonus = card.ability.extra.money
+		if bonus > 0 then return bonus end
+	end
 }
 SMODS.Joker {
   key = 'lobotomia',
@@ -1154,7 +1229,7 @@ SMODS.Joker {
 	['en-us'] = {
 		name = 'Batman',
 		text = {
-		"{C:mult}X2{} Mult.",
+		"{C:mult}X4{} Mult.",
 		"{C:money}+#1#${} at the end of round",
 		"if before applying mult, score sets on fire: {C:mult}X#2#{}" 
 		}
@@ -1162,7 +1237,7 @@ SMODS.Joker {
 	['es_ES'] = {
 		name = 'Batman',
 		text = {
-		"{C:mult}X2{} Multi.",
+		"{C:mult}X4{} Multi.",
 		"{C:money}+#1#${} al final de cada ronda",
 		"si antes de aplicar el multi, la puntuación se prende en fuego: {C:mult}X#2#{}" 
 		}
@@ -1189,7 +1264,7 @@ SMODS.Joker {
 				}
 			else
 				return {
-					Xmult = 2
+					Xmult = 4
 				}	
 			end
 		end
@@ -1208,8 +1283,8 @@ SMODS.Joker {
 		"If your scored hand contains:",
 		"{C:attention}Stone Card{}, destroys it and gains {C:chips}+#2#{} chips",
 		"{C:attention}Steel Card{}, destroys it and gains {X:mult,C:white}X#4#{} mult",
-		"{C:attention}Glass Card{}, destroys it and gains {C:mult}+#6#{} mult",
-		"Currently: {C:chips}+#1#{} chips, {X:mult,C:white}X#3#{} mult, {C:mult}+#5#{} mult"
+		"{C:attention}Glass Card{}, destroys it and gains {X:mult,C:white}X2{} mult",
+		"Currently: {C:chips}+#1#{} chips, {X:mult,C:white}X#3#{} mult"
 		}
 	},
 	['es_ES'] = {
@@ -1218,8 +1293,8 @@ SMODS.Joker {
 		"Si tu mano puntuada contiene:",
 		"{C:attention}Carta de Piedra{}, la destruye y gana {C:chips}+#2#{} fichas",
 		"{C:attention}Carta de Acero{}, la destruye y gana {X:mult,C:white}X#4#{} multi",
-		"{C:attention}Carta de Vidrio{}, la destruye y gana {C:mult}+#6#{} multi",
-		"Actual: {C:chips}+#1#{} fichas, {X:mult,C:white}X#3#{} multi, {C:mult}+#5#{} multi"
+		"{C:attention}Carta de Vidrio{}, la destruye y gana {X:mult,C:white}X2{} multi",
+		"Actual: {C:chips}+#1#{} fichas, {X:mult,C:white}X#3#{} multi"
 		}
 	}
     },
@@ -1231,7 +1306,7 @@ SMODS.Joker {
     atlas = 'jokers',
     pos = { x = 0, y = 2 },
     cost = 8,
-	config = { extra = { chips = 0, chip_gain = 50, Xmult = 1, Xmult_gain = 0.5, mult = 0, mult_gain = 10 } },
+	config = { extra = { chips = 0, chip_gain = 50, Xmult = 1, Xmult_gain = 0.5 } },
     blueprint_compat = true,
     calculate = function(self, card, context)
         if context.destroy_card and context.cardarea == G.play and not context.repetition then
@@ -1253,7 +1328,7 @@ SMODS.Joker {
             end
 			for _, v in ipairs(context.scoring_hand) do
 				if SMODS.has_enhancement(v, "m_glass") then
-					card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain
+					card.ability.extra.Xmult = card.ability.extra.Xmult + 2
 					return {
 						remove = true
 					}
@@ -1402,6 +1477,78 @@ SMODS.Joker {
   end
 }
 SMODS.Joker {
+    key = 'deargod',
+    loc_txt = {
+	['en-us'] = {
+		name = 'Dear God',
+		text = {
+		"When selecting a {C:attention}blind{}, gains {X:dark_edition,C:white}^#2#{} mult",
+		"and {C:attention}destroys{} a random joker",
+		"{C:inactive}Currently: {X:dark_edition,C:white}^#1#{} {C:inactive}mult{}"
+		}
+	},
+	['es_ES'] = {
+		name = 'Querido Dios',
+		text = {
+		"Al seleccionar una {C:attention}ciega{}, gana {X:dark_edition,C:white}^#2#{} multi",
+		"y {C:attention}destruye{} un comodín aleatorio",
+		"{C:inactive}Actual: {X:dark_edition,C:white}^#1#{} {C:inactive}multi{}"
+		}
+	}
+    },
+    config = { extra = { Emult = 1, Emult_gain = 0.04 } },
+    loc_vars = function(self, info_queue, card)
+      return { vars = { card.ability.extra.Emult, card.ability.extra.Emult_gain } }
+    end,
+    rarity = 3,
+    atlas = 'jokers',
+    pos = { x = 1, y = 4 },
+    cost = 9,
+    blueprint_compat = true,
+	eternal_compat = true, --can it be eternal
+	perishable_compat = true, --can it be perishable
+	calculate = function(self, card, context)
+		if context.setting_blind then
+			card.ability.extra.Emult = card.ability.extra.Emult + card.ability.extra.Emult_gain
+			local destructable_jokers = {}
+			for i = 1, #G.jokers.cards do
+				if 
+					G.jokers.cards[i] ~= card
+					and not G.jokers.cards[i].ability.eternal
+					and not G.jokers.cards[i].getting_sliced
+				then
+					destructable_jokers[#destructable_jokers+1] = G.jokers.cards[i]
+				end
+			end
+			local joker_to_destroy = #destructable_jokers > 0
+				and pseudorandom_element(destructable_jokers, pseudoseed('deargod')) 
+			or nil
+			if joker_to_destroy then 
+					joker_to_destroy.getting_sliced = true
+					G.E_MANAGER:add_event(Event({
+							func = function()
+								(context.blueprint_card or card):juice_up(0.8, 0.8)
+								joker_to_destroy:start_dissolve({G.C.RED}, nil, 1.6)
+							return true
+						end,
+					}))
+				if not (context.blueprint_card or self).getting_sliced then
+					card_eval_status_text((context.blueprint_card or card), "extra", nil, nil, nil, {message = localize{type = 'variable', key = 'a_powmult', vars = {card.ability.extra.Emult}}})
+				end
+				return nil, true
+			end
+		end
+		if context.joker_main then
+		    return {
+				Emult_mod = card.ability.extra.Emult,
+				message = localize { type = 'variable', key = 'a_powmult', vars = { card.ability.extra.Emult } },
+				message = '^' .. card.ability.extra.Emult,
+				colour = G.C.MULT	
+			}
+		end
+	end
+}
+SMODS.Joker {
     key = 'jonkler',
     loc_txt = {
 	['en-us'] = {
@@ -1458,7 +1605,7 @@ SMODS.Joker {
 		}
     },
     bp_compat = true,
-    config = { extra = { Emult = 1, Emult_gain = 0.05 } },
+    config = { extra = { Emult = 1, Emult_gain = 0.1 } },
     loc_vars = function(self, info_queue, card)
       return { vars = { card.ability.extra.Emult, card.ability.extra.Emult_gain } }
     end,
@@ -1567,28 +1714,28 @@ SMODS.Joker {
 	['en-us'] = {
 		name = 'The car I was talking about:',
 		text = {
-		"Thank you momma! Gains {C:mult}+#2#{} mult and creates a {C:negative}negative{} {C:attention}Legendary Joker{}",
+		"Thank you momma! Gains {X:mult,C:white}X#2#{} mult",
 		"if you have {C:attention}They took the car away{}",
-		"Currently: {C:mult}+#1#{} mult"
+		"Currently: {X:mult,C:white}X#1#{} mult"
 		}
 	},
 		['es_ES'] = {
 			name = 'El coche en cuestión:',
 			text = {
-			"Gracias mama! Gana {C:mult}+#2#{} multi y genera un {C:attention}Joker Legendario{} {C:negative}negativo{}",
+			"Gracias mama! Gana {X:mult,C:white}X#2#{} multi",
 			"si tienes {C:attention}Se han llevao el coche{}",
-			"Actual: {C:mult}+#1#{} multi"
+			"Actual: {X:mult,C:white}X#1#{} multi"
 			}
 		}
     },
     bp_compat = true,
-    config = { extra = { mult = 111.1, mult_gain = 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 } },
+    config = { extra = { Xmult = 111.1, Xmult_gain = 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 } },
     rarity = 'idk_elquefiltra',
     atlas = 'jokers',
     pos = { x = 1, y = 3 },
     cost = 69,
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.mult, card.ability.extra.mult_gain } }
+		return { vars = { card.ability.extra.Xmult, card.ability.extra.Xmult_gain } }
 	end,
     blueprint_compat = true,
     calculate = function(self, card, context)
@@ -1596,17 +1743,11 @@ SMODS.Joker {
 			local pool = {}
 			for i,v in pairs(G.jokers.cards) do                                                          
 				if #SMODS.find_card('j_idk_sehanllevaoelcoche') > 0 then
-					card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain
-					G.E_MANAGER:add_event(Event({
-						func = function()
-								SMODS.add_card({set = 'Joker', area = G.jokers, legendary = true, edition = 'e_negative'})
-							return true
-						end
-					}))			
+					card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_gain
 				end
 			end
 			return {
-				mult = card.ability.extra.mult
+				Xmult = card.ability.extra.Xmult
 			}
         end
     end
@@ -1692,6 +1833,45 @@ SMODS.Consumable{
     end,
     use = function(self,card,area,copier)
 		SMODS.add_card({set = 'Joker', area = G.jokers, rarity = 'idk_elquefiltra' })
+    end,
+}
+SMODS.Consumable{
+    key = 'thisdog', --key
+    set = 'Spectral', --the set of the card: corresponds to a consumable type
+    atlas = 'consumables', --atlas
+    pos = {x = 3, y = 0}, --position in atlas
+    loc_txt = {
+	['en-us'] = {
+		name = 'this dog is fucked up bruh',
+		text = {
+		"",
+		"Turn your entire hand {C:dark_edition}negative{}",
+		"{C:red}-{C:money}$15{}"
+		}
+	},
+	['es_ES'] = {
+		name = 'el pe    pe',
+		text = {
+		"Convierte toda tu mano en {C:dark_edition}negativa{}",
+		"{C:red}-{C:money}$15{}"	
+		}
+	}
+    },
+    can_use = function(self,card)
+        if G and G.hand then
+                return true
+        end
+        return false
+    end,
+    use = function(self,card,area,copier)
+        for i=1, #G.hand.cards do
+            --for every card in hand highlighted
+
+            G.hand.cards[i]:set_edition({negative = true},true)
+            --set their edition to negative
+        end
+		ease_dollars(-15)
+
     end,
 }
 SMODS.Rarity {
